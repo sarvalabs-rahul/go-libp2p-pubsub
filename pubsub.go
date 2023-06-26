@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"math/rand"
+	"runtime"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -1377,10 +1378,17 @@ func (p *PubSub) BlacklistPeer(pid peer.ID) {
 // The number of active goroutines is controlled by global and per topic validator
 // throttles; if it exceeds the throttle threshold, messages will be dropped.
 func (p *PubSub) RegisterTopicValidator(topic string, val interface{}, opts ...ValidatorOpt) error {
+	_, file, line, ok := runtime.Caller(1)
+	name := "unknown validator"
+	if ok {
+		name = fmt.Sprintf("%s:%d", file, line)
+	}
+
 	addVal := &addValReq{
 		topic:    topic,
 		validate: val,
 		resp:     make(chan error, 1),
+		name:     name,
 	}
 
 	for _, opt := range opts {

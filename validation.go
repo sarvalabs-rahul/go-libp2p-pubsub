@@ -99,6 +99,8 @@ type validatorImpl struct {
 	validateTimeout  time.Duration
 	validateThrottle chan struct{}
 	validateInline   bool
+	// A name to identify the validator
+	name string
 }
 
 // async request to add a topic validators
@@ -109,6 +111,8 @@ type addValReq struct {
 	throttle int
 	inline   bool
 	resp     chan error
+	// A name to identify the validator
+	name string
 }
 
 // async request to remove a topic validator
@@ -197,6 +201,7 @@ func (v *validation) makeValidator(req *addValReq) (*validatorImpl, error) {
 		validateTimeout:  0,
 		validateThrottle: make(chan struct{}, defaultValidateConcurrency),
 		validateInline:   req.inline,
+		name:             req.name,
 	}
 
 	if req.timeout > 0 {
@@ -483,6 +488,9 @@ func (val *validatorImpl) validateMsg(ctx context.Context, src peer.ID, msg *Mes
 	}
 
 	r := val.validate(ctx, src, msg)
+	if r == ValidationReject {
+		log.Warnf("Validator %s rejected message from %s", val.name, src)
+	}
 	switch r {
 	case ValidationAccept:
 		fallthrough
@@ -503,8 +511,14 @@ func (val *validatorImpl) validateMsg(ctx context.Context, src peer.ID, msg *Mes
 // a per topic validator.
 func WithDefaultValidator(val interface{}, opts ...ValidatorOpt) Option {
 	return func(ps *PubSub) error {
+		_, file, line, ok := runtime.Caller(1)
+		name := "unknown validator"
+		if ok {
+			name = fmt.Sprintf("%s:%d", file, line)
+		}
 		addVal := &addValReq{
 			validate: val,
+			name:     name,
 		}
 
 		for _, opt := range opts {
