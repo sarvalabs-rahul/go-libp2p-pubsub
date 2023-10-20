@@ -1384,6 +1384,16 @@ func (gs *GossipSubRouter) heartbeat() {
 
 	// maintain the mesh for topics we have joined
 	for topic, peers := range gs.mesh {
+		fmt.Println("Printing the peers for topic", topic, peers, len(peers))
+
+		for peerID := range peers {
+			protocols, err := gs.p.host.Network().Peerstore().GetProtocols(peerID)
+			if err != nil {
+				fmt.Println("failed to fetch peer protocols", err)
+				fmt.Println("Peer protocol", peerID, protocols)
+			}
+		}
+
 		prunePeer := func(p peer.ID) {
 			gs.tracer.Prune(p, topic)
 			delete(peers, p)
