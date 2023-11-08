@@ -617,6 +617,8 @@ func (gs *GossipSubRouter) HandleRPC(rpc *RPC) {
 	iwant := gs.handleIHave(rpc.from, ctl)
 	ihave := gs.handleIWant(rpc.from, ctl)
 	prune := gs.handleGraft(rpc.from, ctl)
+
+	fmt.Println("handling RPC", iwant, ihave, prune)
 	gs.handlePrune(rpc.from, ctl)
 
 	if len(iwant) == 0 && len(ihave) == 0 && len(prune) == 0 {
@@ -1383,19 +1385,19 @@ func (gs *GossipSubRouter) heartbeat() {
 	}
 
 	// maintain the mesh for topics we have joined
-	fmt.Println("###################################")
+	//fmt.Println("###################################")
 	for topic, peers := range gs.mesh {
-		fmt.Println("Printing the peers for topic", topic, peers, len(peers))
-		for peerID := range peers {
-			protocols, err := gs.p.host.Network().Peerstore().GetProtocols(peerID)
-			if err != nil {
-				fmt.Println("failed to fetch peer protocols", err)
-			}
+		//fmt.Println("Printing the peers for topic", topic, peers, len(peers))
+		//for peerID := range peers {
+		//	protocols, err := gs.p.host.Network().Peerstore().GetProtocols(peerID)
+		//	if err != nil {
+		//		fmt.Println("failed to fetch peer protocols", err)
+		//	}
+		//
+		//	//fmt.Println("Peer protocol", peerID, protocols)
+		//}
 
-			fmt.Println("Peer protocol", peerID, protocols)
-		}
-
-		fmt.Println("**************************")
+		//fmt.Println("**************************")
 
 		prunePeer := func(p peer.ID) {
 			gs.tracer.Prune(p, topic)

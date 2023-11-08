@@ -179,6 +179,7 @@ func (d *discover) Advertise(topic string) {
 		return
 	}
 
+	println("Advertising %%%%%%%%%")
 	advertisingCtx, cancel := context.WithCancel(d.p.ctx)
 
 	if _, ok := d.advertising[topic]; ok {
