@@ -618,7 +618,7 @@ func (gs *GossipSubRouter) HandleRPC(rpc *RPC) {
 	ihave := gs.handleIWant(rpc.from, ctl)
 	prune := gs.handleGraft(rpc.from, ctl)
 
-	fmt.Println("handling RPC", iwant, ihave, prune)
+	fmt.Println("handling RPC", rpc.from, iwant, ihave, prune)
 	gs.handlePrune(rpc.from, ctl)
 
 	if len(iwant) == 0 && len(ihave) == 0 && len(prune) == 0 {

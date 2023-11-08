@@ -1118,7 +1118,6 @@ func DefaultPeerFilter(pid peer.ID, topic string) bool {
 func (p *PubSub) pushMsg(msg *Message) {
 	src := msg.ReceivedFrom
 
-	fmt.Println("Seeing a message", src)
 	// reject messages from blacklisted peers
 	if p.blacklist.Contains(src) {
 		log.Debugf("dropping message from blacklisted peer %s", src)
@@ -1153,6 +1152,8 @@ func (p *PubSub) pushMsg(msg *Message) {
 		p.tracer.DuplicateMessage(msg)
 		return
 	}
+
+	fmt.Println("Seeing a message", src, msg.Topic, msg.ReceivedFrom, msg.Local)
 
 	if !p.val.Push(src, msg) {
 		return
