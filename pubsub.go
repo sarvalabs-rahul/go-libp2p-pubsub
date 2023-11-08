@@ -1153,7 +1153,7 @@ func (p *PubSub) pushMsg(msg *Message) {
 		return
 	}
 
-	fmt.Println("Seeing a message", src, msg.Topic, msg.ReceivedFrom, msg.Local)
+	fmt.Println("Seeing a message", src, *msg.Topic, msg.Local)
 
 	if !p.val.Push(src, msg) {
 		return
